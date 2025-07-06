@@ -64,7 +64,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: busybox:latest
+        image: busybox
         env:
         - name: FRONTEND_ADDR
           value: "frontend:80"
@@ -77,7 +77,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: loadgenerator
+        image: devopswithdayanand/micro-project:loadgenerator
         env:
         - name: FRONTEND_ADDR
           value: "frontend:80"

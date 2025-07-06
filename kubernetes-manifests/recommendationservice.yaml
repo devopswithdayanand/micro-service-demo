@@ -43,7 +43,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: recommendationservice
+        image: devopswithdayanand/micro-project:recommendationservice
         ports:
         - containerPort: 8080
         readinessProbe:

@@ -44,7 +44,7 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: frontend
+          image: devopswithdayanand/micro-project:frontend
           ports:
           - containerPort: 8080
           readinessProbe:
@@ -127,7 +127,7 @@ metadata:
   labels:
     app: frontend
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: frontend
   ports:
