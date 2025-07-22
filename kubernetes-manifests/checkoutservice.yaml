@@ -42,7 +42,7 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: devopswithdayanand/micro-project:checkoutservice
+          image: __IMAGE_NAME__
           ports:
           - containerPort: 5050
           readinessProbe:
