@@ -1,14 +1,16 @@
 #!/bin/bash
 
-# Ensure full history is available (unshallow if needed)
+# Ensure full history is available
 git fetch --unshallow 2>/dev/null || git fetch --all
 
-# Determine comparison baseline: use origin/main if HEAD~1 is missing
+# Set comparison base
 if git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
   COMPARE_BASE="HEAD~1"
 else
   COMPARE_BASE="origin/main"
 fi
+
+echo "COMPARE_BASE=${COMPARE_BASE}"
 
 changed_services=()
 
@@ -20,5 +22,5 @@ for dir in src/*/ ; do
   fi
 done
 
-# Output unique service names
+# Output changed service names
 echo "${changed_services[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '
