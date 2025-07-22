@@ -10,7 +10,7 @@ else
   COMPARE_BASE="origin/main"
 fi
 
-echo "COMPARE_BASE=${COMPARE_BASE}"
+echo "COMPARE_BASE is $COMPARE_BASE" >&2  # Debug info to stderr, not stdout
 
 changed_services=()
 
@@ -22,5 +22,5 @@ for dir in src/*/ ; do
   fi
 done
 
-# Output changed service names
-echo "${changed_services[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '
+# Final output (only this gets captured by Jenkins)
+echo "${changed_services[@]}"
