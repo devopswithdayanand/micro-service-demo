@@ -43,7 +43,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: devopswithdayanand/micro-project:paymentservice
+        image: __IMAGE_NAME__
         ports:
         - containerPort: 50051
         env:
