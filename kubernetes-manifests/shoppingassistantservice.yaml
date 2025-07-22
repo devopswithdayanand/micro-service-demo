@@ -12,6 +12,8 @@ spec:
       labels:
         app: shoppingassistantservice
     spec:
+      imagePullSecrets:
+        - name: ecr-creds
       containers:
         - name: shoppingassistantservice
           image: __IMAGE_NAME__
