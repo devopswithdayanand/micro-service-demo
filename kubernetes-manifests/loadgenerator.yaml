@@ -77,7 +77,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: devopswithdayanand/micro-project:loadgenerator
+        image: __IMAGE_NAME__
         env:
         - name: FRONTEND_ADDR
           value: "frontend:80"
