@@ -72,7 +72,7 @@ adService:
 
 cartService:
   create: true
-  name: 
+  name: devopswithdayanand/cartservice
   resources:
     requests:
       cpu: 200m
