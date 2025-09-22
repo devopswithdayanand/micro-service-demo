@@ -61,7 +61,7 @@ securityContext:
 
 adService:
   create: true
-  name: adservice
+  name: devopswithdayanand/adservice
   resources:
     requests:
       cpu: 200m
@@ -72,7 +72,7 @@ adService:
 
 cartService:
   create: true
-  name: cartservice
+  name: 
   resources:
     requests:
       cpu: 200m
@@ -83,7 +83,7 @@ cartService:
 
 checkoutService:
   create: true
-  name: checkoutservice
+  name: devopswithdayanand/checkoutservice
   resources:
     requests:
       cpu: 100m
@@ -94,7 +94,7 @@ checkoutService:
 
 currencyService:
   create: true
-  name: currencyservice
+  name: devopswithdayanand/currencyservice
   resources:
     requests:
       cpu: 100m
@@ -105,7 +105,7 @@ currencyService:
 
 emailService:
   create: true
-  name: emailservice
+  name: devopswithdayanand/emailservice
   resources:
     requests:
       cpu: 100m
@@ -116,7 +116,7 @@ emailService:
 
 frontend:
   create: true
-  name: frontend
+  name: devopswithdayanand/frontend
   externalService: true
   cymbalBranding: false
   # One of: local, gcp, aws, azure, onprem, alibaba. When not set, defaults to "local" unless running in GKE, otherwise auto-sets to gcp.
@@ -141,7 +141,7 @@ frontend:
 
 loadGenerator:
   create: true
-  name: loadgenerator
+  name: devopswithdayanand/loadgenerator
   checkFrontendInitContainer: true
   resources:
     requests:
@@ -153,7 +153,7 @@ loadGenerator:
 
 paymentService:
   create: true
-  name: paymentservice
+  name: devopswithdayanand/paymentservice
   resources:
     requests:
       cpu: 100m
@@ -164,7 +164,7 @@ paymentService:
 
 productCatalogService:
   create: true
-  name: productcatalogservice
+  name: devopswithdayanand/productcatalogservice
   # Specifies an extra latency to any request on productcatalogservice, by default no extra latency.
   extraLatency: ""
   resources:
@@ -177,7 +177,7 @@ productCatalogService:
 
 recommendationService:
   create: true
-  name: recommendationservice
+  name: devopswithdayanand/recommendationservice
   resources:
     requests:
       cpu: 100m
@@ -188,7 +188,7 @@ recommendationService:
 
 shippingService:
   create: true
-  name: shippingservice
+  name: devopswithdayanand/shippingservice
   resources:
     requests:
       cpu: 100m
