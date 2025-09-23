@@ -45,7 +45,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: __IMAGE_NAME__
+        image: devopswithdayanand/currencyservice:latest
         ports:
         - name: grpc
           containerPort: 7000

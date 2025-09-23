@@ -79,7 +79,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: __IMAGE_NAME__
+        image: devopswithdayanand/loadgenerator:latest
         env:
         - name: FRONTEND_ADDR
           value: "frontend:80"

@@ -45,7 +45,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: devopswithdayanand/adservice
+        image: devopswithdayanand/adservice:latest
         ports:
         - containerPort: 9555
         env:

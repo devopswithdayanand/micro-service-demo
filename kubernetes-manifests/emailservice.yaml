@@ -45,7 +45,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: __IMAGE_NAME__
+        image: devopswithdayanand/emailservice:latest
         ports:
         - containerPort: 8080
         env:

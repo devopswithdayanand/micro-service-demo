@@ -44,7 +44,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: __IMAGE_NAME__
+        image: devopswithdayanand/shippingservice:latest
         ports:
         - containerPort: 50051
         env:

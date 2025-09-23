@@ -16,6 +16,6 @@ spec:
         - name: ecr-creds
       containers:
         - name: shoppingassistantservice
-          image: __IMAGE_NAME__
+          image: devopswithdayanand/shoppingassistantservice:latest
           ports:
             - containerPort: 8080
