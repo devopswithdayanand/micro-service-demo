@@ -1,4 +1,14 @@
 #!/usr/bin/env bash
+# scripts/simple-build-and-push.sh
+# Simple script: build and push every folder that has a Dockerfile (one level deep)
+#
+# Usage:
+#   from repo root:
+#     ./scripts/simple-build-and-push.sh
+#   optional:
+#     TAG=release-123 ./scripts/simple-build-and-push.sh
+#   non-interactive login:
+#     DOCKERHUB_PASSWORD=ghp_xxx ./scripts/simple-build-and-push.sh
 
 set -euo pipefail
 
@@ -29,20 +39,36 @@ else
 fi
 
 # iterate and build/push
+# set PUSH_LATEST=1 to push :latest as well; set to 0 to skip
+PUSH_LATEST="${PUSH_LATEST:-1}"
+
 for dir in "${SERVICES[@]}"; do
   svc="$(basename "$dir")"
   full_image="${DOCKERHUB_USER}/${svc}:${TAG}"
+  latest_image="${DOCKERHUB_USER}/${svc}:latest"
+  local_tag="${svc}:local"
 
   log "Building service '${svc}' from '${dir}'"
-  docker build -t "${svc}:local" "${dir}"
+  docker build -t "${local_tag}" "${dir}"
 
-  log "Tagging ${svc}:local → ${full_image}"
-  docker tag "${svc}:local" "${full_image}"
-
+  # tag & push the immutable/tagged image
+  log "Tagging ${local_tag} → ${full_image}"
+  docker tag "${local_tag}" "${full_image}"
   log "Pushing ${full_image}"
   docker push "${full_image}"
 
-  log "Finished ${full_image}"
+  # optionally tag & push :latest (overwrites last latest)
+  if [[ "${PUSH_LATEST}" == "1" ]]; then
+    log "Tagging ${local_tag} → ${latest_image}"
+    docker tag "${local_tag}" "${latest_image}"
+    log "Pushing ${latest_image}"
+    docker push "${latest_image}"
+  else
+    log "Skipping push of :latest for ${svc} (PUSH_LATEST=${PUSH_LATEST})"
+  fi
+
+  log "Finished ${svc} (pushed tags: ${TAG} ${PUSH_LATEST:+and latest})"
 done
+
 
 log "All done. Pushed ${#SERVICES[@]} images with tag=${TAG}"
