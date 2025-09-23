@@ -31,7 +31,7 @@ fi
 log "Found ${#SERVICES[@]} services. Using DockerHub user: ${DOCKERHUB_USER}, tag: ${TAG}"
 
 # DockerHub login (non-interactive if DOCKERHUB_PASSWORD provided)
-if [[ -n "${DOCKERHUB_PASSWORD:-dckr_pat_qs31blWlEcXnT4tmrnwgnkZPcu8}" ]]; then
+if [[ -n "${DOCKERHUB_PASSWORD:-}" ]]; then
   echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USER" --password-stdin
 else
   log "No DOCKERHUB_PASSWORD env var — running interactive docker login"
