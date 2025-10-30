@@ -1,74 +1,57 @@
-#!/usr/bin/env bash
-# scripts/simple-build-and-push.sh
-# Simple script: build and push every folder that has a Dockerfile (one level deep)
-#
-# Usage:
-#   from repo root:
-#     ./scripts/simple-build-and-push.sh
-#   optional:
-#     TAG=release-123 ./scripts/simple-build-and-push.sh
-#   non-interactive login:
-#     DOCKERHUB_PASSWORD=ghp_xxx ./scripts/simple-build-and-push.sh
+#!/bin/bash
+# src/docker_image_buid_push.sh
+# Builds and pushes all Docker images under src/*/Dockerfile to AWS ECR
+# Tags each image with both commit SHA and latest
+# Pushes all commit tags first, then latest tags at the end
 
-set -euo pipefail
+set -e
 
-# ------------ config (change if needed) ------------
-DOCKERHUB_USER="${DOCKERHUB_USER:-devopswithdayanand}"
-TAG="${TAG:-$(git rev-parse --short HEAD 2>/dev/null || date +%s)}"
-# --------------------------------------------------
+AWS_REGION="ap-northeast-1"
+AWS_ACCOUNT_ID="395563380578"
+ECR_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+TAG=$(git rev-parse --short HEAD 2>/dev/null || date +%s)
 
-log() { printf "\n[ %s ] %s\n" "$(date '+%H:%M:%S')" "$*"; }
+echo "🔹 Logging in to Amazon ECR..."
+aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$ECR_URI"
 
-# find directories (one level) that contain a Dockerfile
-mapfile -t SERVICES < <(find . -maxdepth 2 -type f -iname Dockerfile -print \
-  | sed -E 's|/Dockerfile$||' | sed 's|^\./||' | sort)
+echo "🔹 Searching for Dockerfiles in ./src/"
+mapfile -t DOCKERFILES < <(find src -type f -name Dockerfile)
 
-if [[ ${#SERVICES[@]} -eq 0 ]]; then
-  echo "No Dockerfiles found. Put Dockerfile in service folders (e.g. ./service-auth/Dockerfile)."
+if [ ${#DOCKERFILES[@]} -eq 0 ]; then
+  echo "❌ No Dockerfiles found under src/. Expected: src/<service>/Dockerfile"
   exit 1
 fi
 
-log "Found ${#SERVICES[@]} services. Using DockerHub user: ${DOCKERHUB_USER}, tag: ${TAG}"
+echo "🔹 Found ${#DOCKERFILES[@]} services."
+IMAGES=()
 
-# DockerHub login (non-interactive if DOCKERHUB_PASSWORD provided)
-if [[ -n "${DOCKERHUB_PASSWORD:-}" ]]; then
-  echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USER" --password-stdin
-else
-  log "No DOCKERHUB_PASSWORD env var — running interactive docker login"
-  docker login --username "$DOCKERHUB_USER"
-fi
+# Step 1: Build and tag each image
+for dockerfile in "${DOCKERFILES[@]}"; do
+  service=$(basename "$(dirname "$dockerfile")")
+  image="${ECR_URI}/${service}:${TAG}"
+  latest="${ECR_URI}/${service}:latest"
+  IMAGES+=("$service")
 
-# iterate and build/push
-# set PUSH_LATEST=1 to push :latest as well; set to 0 to skip
-PUSH_LATEST="${PUSH_LATEST:-1}"
-
-for dir in "${SERVICES[@]}"; do
-  svc="$(basename "$dir")"
-  full_image="${DOCKERHUB_USER}/${svc}:${TAG}"
-  latest_image="${DOCKERHUB_USER}/${svc}:latest"
-  local_tag="${svc}:local"
-
-  log "Building service '${svc}' from '${dir}'"
-  docker build -t "${local_tag}" "${dir}"
-
-  # tag & push the immutable/tagged image
-  log "Tagging ${local_tag} → ${full_image}"
-  docker tag "${local_tag}" "${full_image}"
-  log "Pushing ${full_image}"
-  docker push "${full_image}"
-
-  # optionally tag & push :latest (overwrites last latest)
-  if [[ "${PUSH_LATEST}" == "1" ]]; then
-    log "Tagging ${local_tag} → ${latest_image}"
-    docker tag "${local_tag}" "${latest_image}"
-    log "Pushing ${latest_image}"
-    docker push "${latest_image}"
-  else
-    log "Skipping push of :latest for ${svc} (PUSH_LATEST=${PUSH_LATEST})"
-  fi
-
-  log "Finished ${svc} (pushed tags: ${TAG} ${PUSH_LATEST:+and latest})"
+  echo "🚀 Building image for ${service}"
+  docker build -t "$image" "$(dirname "$dockerfile")"
+  docker tag "$image" "$latest"
 done
 
+# Step 2: Push all <commit> tags
+echo "🔹 Pushing all images with tag ${TAG}"
+for service in "${IMAGES[@]}"; do
+  image="${ECR_URI}/${service}:${TAG}"
+  echo "⬆️  Pushing ${image}"
+  docker push "$image"
+done
 
-log "All done. Pushed ${#SERVICES[@]} images with tag=${TAG}"
+# Step 3: Push all :latest tags at the end
+echo "🔹 Pushing all :latest tags"
+for service in "${IMAGES[@]}"; do
+  latest="${ECR_URI}/${service}:latest"
+  echo "⬆️  Pushing ${latest}"
+  docker push "$latest"
+done
+
+echo "🎉 All ${#IMAGES[@]} services pushed successfully to ${ECR_URI}"
+echo "   Tags pushed: ${TAG} and latest"
